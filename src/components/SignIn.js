@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button } from '@mui/material'; 
-import { signInWithEmailAndPassword } from 'firebase/auth'; // Import the function
+import { signInWithEmailAndPassword } from 'firebase/auth'; 
 import { auth } from '../firebase'; // Import the Firebase auth instance
 
 
@@ -14,7 +14,6 @@ function SignIn({setSignedIn, setUser}) {
       // Sign in with email and password using Firebase Authentication
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log('User signed in successfully:', userCredential.user);
-      // Redirect or show the user's profile, for example
       setSignedIn(true);
       setUser(userCredential.user);
     } catch (error) {

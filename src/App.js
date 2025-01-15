@@ -1,30 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import Box  from '@mui/material/Box';
-import { Button } from '@mui/material';
-import { auth } from './firebase';
-import { signOut } from 'firebase/auth';
 import './App.css';
-import SignIn from './components/SignIn';
-import Header from './components/Header';
+import Header from "./components/Header";
+import Admin from './pages/admin';
+import Home from './pages';
+
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [signedIn, setSignedIn] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const signingOut = async () => {
-    try {
-      await signOut(auth); // Sign the user out
-      console.log('User signed out');
-      setSignedIn(false);
-    } catch (error) {
-      console.error('Error signing out: ', error);
-    }
-    
-  };
+  useEffect(() => {
+    // Media query to check if the screen size is <= 768px
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
+    const handleMediaQueryChange = () => {
+      setIsMobile(mediaQuery.matches); // Updates state if the media query matches
+    };
 
+    // Set initial state
+    handleMediaQueryChange();
+
+    // Add event listener for media query change
+    mediaQuery.addEventListener('change', handleMediaQueryChange);
+
+    // Cleanup listener on component unmount
+    return () => mediaQuery.removeEventListener('change', handleMediaQueryChange);
+  }, []);
   return (
-  <>
-    <Header/>
+    <div className="App">
+      <Header/>
       <Box
       sx={{
         display: 'flex',
@@ -32,16 +36,17 @@ function App() {
         alignItems: 'center',      // Center vertically
       }}
     >
-    <div className="App">
-      {signedIn ? (<>
-          <h2>Welcome, {user.email}</h2>
-          <Button onClick={signingOut} variant="contained" color="primary" fullWidth style={{ marginTop: '16px' }}>Sign Out</Button>
-        </>):
-      (<SignIn setSignedIn={setSignedIn} setUser={setUser}/>)}
+        
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home/>} />
+        <Route path="/admin" element={<Admin isMobile={isMobile}/>} />
+      </Routes>
+    </Router>
+     </Box>
     </div>
-    </Box>
-    </>
   );
 }
 
 export default App;
+
